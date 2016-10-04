@@ -15,7 +15,6 @@ class ScrapingPage(object):
 
     def loadDriver(self):
         path = './chromeDriver/chromedriver'
-        # self.driver = webdriver.Chrome(path)
         chrome_options = webdriver.ChromeOptions()
         prefs = {"profile.default_content_setting_values.notifications": 2}
         chrome_options.add_experimental_option("prefs", prefs)
@@ -50,12 +49,25 @@ class ScrapingPage(object):
             item.click()
             time.sleep(5)
 
+    def list(self):
+        css = 'uiList'
+        for item in self.driver.find_elements_by_class_name(css):
+            time.sleep(2)
+            for elem in item.find_elements_by_tag_name('a'):
+                ahref = elem.get_attribute("href")
+                links = "/ufi/reaction/profile/browser/fetch/"
+                if ahref is not None and ahref.find(links) > -1:
+                    print ahref
+                    elem.click()
+                    time.sleep(2)
+
     def run(self):
         self.user()
         self.loadDriver()
         self.login()
         self.scraping()
         time.sleep(5)
+        self.list()
         self.despliegue()
 
 if __name__ == "__main__":
