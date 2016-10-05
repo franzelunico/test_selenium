@@ -7,11 +7,11 @@ class ScrapingPage(object):
         print "Hello"
 
     def user(self):
-        file = open('data.txt')
-        lines = file.read().splitlines()
+        mydata = open('data.txt')
+        lines = mydata.read().splitlines()
         self.name = lines[0]
         self.password = lines[1]
-        file.close()
+        mydata.close()
 
     def loadDriver(self):
         path = './chromeDriver/chromedriver'
@@ -41,34 +41,70 @@ class ScrapingPage(object):
             links = "https://www.facebook.com/ufi/"
             if ahref is not None and ahref.find(links) > -1:
                 thelist.append(item.get_attribute("href"))
+        print thelist[0]
         self.driver.get(thelist[0])
+        # test
+        # link = "https://www.facebook.com/ufi/reaction/profile/browser/"
+        # link += "?ft_ent_identifier=1550376058309595&av=100012901368010"
+        # self.driver.get(link)
 
-    def despliegue(self):
-        css = 'uiMorePagerPrimary'
-        for item in self.driver.find_elements_by_class_name(css):
-            item.click()
-            time.sleep(5)
+    """ Mespliega la version de like en tu totalidad  """
+    def motion(self):
+        contenido = self.driver.find_element_by_id('content')
+        query = "div>div>div>ul.uiList>li"
+        lista_emo = contenido.find_elements_by_css_selector(query)
+        for item in lista_emo:
+            self.display(item)
+        # tam = len(item.find_elements_by_css_selector(css))
+        # while tam == 1:
+        #     elem = item.find_element_by_css_selector(css)
+        #     ahref = elem.get_attribute("href")
+        #     links = "reaction_type=1"
+        #     if ahref is not None and ahref.find(links) > -1:
+        #         elem.click()
+        #         time.sleep(10)
+        #     tam = len(item.find_elements_by_css_selector(css))
+        # elem = item.find_element_by_css_selector(css)
 
-    def list(self):
-        css = 'uiList'
-        for item in self.driver.find_elements_by_class_name(css):
-            time.sleep(2)
-            for elem in item.find_elements_by_tag_name('a'):
+    def display(self, item):
+        css = "a.pam.uiBoxLightblue.uiMorePagerPrimary"
+        tam = len(item.find_elements_by_css_selector(css))
+        while tam == 1:
+            elem = item.find_element_by_css_selector(css)
+            ahref = elem.get_attribute("href")
+            links = "reaction_type"
+            if ahref is not None and ahref.find(links) > -1:
+                elem.click()
+                time.sleep(10)
+            tam = len(item.find_elements_by_css_selector(css))
+
+    def capturarLikes(self):
+        contenido = self.driver.find_element_by_id('content')
+        query = "div>div>div>ul.uiList>li"
+        lista_emo = contenido.find_elements_by_css_selector(query)
+        print "================================"
+        for item in lista_emo:
+            "reaction_profile_browser3"
+            query = "ul.uiList"
+            reaction = item.find_element_by_css_selector(query)
+            id_elemt = reaction.get_attribute("id")
+            print id_elemt
+            lista = item.find_elements_by_css_selector("div>ul>li>div>a")
+            for elem in lista:
                 ahref = elem.get_attribute("href")
-                links = "/ufi/reaction/profile/browser/fetch/"
+                links = "profile_browser"
                 if ahref is not None and ahref.find(links) > -1:
                     print ahref
-                    elem.click()
-                    time.sleep(2)
+            print "================================"
 
     def run(self):
         self.user()
         self.loadDriver()
         self.login()
         self.scraping()
-        time.sleep(5)
-        self.list()
-        self.despliegue()
+        self.motion()
+        self.capturarLikes()
+        print 'end display show'
 
 if __name__ == "__main__":
     app = ScrapingPage()
